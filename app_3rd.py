@@ -57,23 +57,25 @@ def main():
             else:
                 st.error("Nom d'utilisateur ou mot de passe incorrect.")
     else:
-        st.sidebar.title("Menu")
-        st.sidebar.markdown(f"👤 Bienvenue **{st.session_state.username}**")
+         # SIDEBAR
+        st.sidebar.markdown(f"👋 Bienvenue **{st.session_state.username}**")
+        menu_items = ["🖤 Home 🖤"] + cats
 
-        pages = ["🖤 Home 🖤"] + cats
-        selected_page = st.sidebar.radio("Navigation", pages)
+        st.sidebar.markdown("---")
+        for item in menu_items:
+            if st.sidebar.button(item):
+                st.session_state.current_page = item
+                st.rerun()
 
-        if st.sidebar.button("Déconnexion"):
+        st.sidebar.markdown("---")
+        if st.sidebar.button("🚪 Déconnexion"):
             st.session_state.authenticated = False
             st.session_state.username = ""
-            st.experimental_rerun()
+            st.rerun()
 
-        st.title(selected_page)
-
-        if selected_page == "🖤 Home 🖤":
-            st.markdown("Bienvenue dans l'album photo des chats 🐾 !\nChoisissez un chat dans le menu pour voir ses photos.")
+        # CONTENU PRINCIPAL
+        st.title(st.session_state.current_page)
+        if st.session_state.current_page == "🖤 Home 🖤":
+            st.markdown("Bienvenue dans l'album photo des chats 🐾 !\n\nClique sur un nom à gauche pour voir les photos.")
         else:
-            show_cat_images(selected_page)
-
-if __name__ == "__main__":
-    main()
+            show_cat_images(st.session_state.current_page)
