@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
-from PIL import Image
+from PIL import Image, ExifTags
 
 cats = ["Kiwi", "Lenka", "Keiko", "Flokie", "Loken"]
 
@@ -15,6 +15,26 @@ def authenticate(username, password, users_df):
         return True, user_row.iloc[0]
     return False, None
 
+def load_and_correct_image(path):
+    img = Image.open(path)
+    try:
+        for orientation in ExifTags.TAGS.keys():
+            if ExifTags.TAGS[orientation] == 'Orientation':
+                break
+        exif = img._getexif()
+        if exif is not None:
+            orientation_value = exif.get(orientation, None)
+            if orientation_value == 3:
+                img = img.rotate(180, expand=True)
+            elif orientation_value == 6:
+                img = img.rotate(270, expand=True)
+            elif orientation_value == 8:
+                img = img.rotate(90, expand=True)
+    except (AttributeError, KeyError, IndexError):
+        # Pas de métadonnées EXIF
+        pass
+    return img
+
 def show_cat_images(cat_name):
     image_dir = "images"
     images = [f"{cat_name}{i}.jpg" for i in range(1, 4)]
@@ -22,8 +42,8 @@ def show_cat_images(cat_name):
     for i in range(3):
         img_path = os.path.join(image_dir, images[i])
         if os.path.exists(img_path):
-            img = Image.open(img_path)
-            cols[i].image(img,  use_container_width=True, caption=images[i])
+            img = load_and_correct_image(img_path)
+            cols[i].image(img, use_column_width=True, caption=images[i])
         else:
             cols[i].warning(f"{images[i]} non trouvée")
 
