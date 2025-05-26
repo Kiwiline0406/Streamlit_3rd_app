@@ -11,9 +11,10 @@ def load_users():
 
 def tips_connexion(users_df):
     if st.checkbox("💡 Besoin d'un indice de connexion ?"):
-        st.markdown("Voici quelques exemples d'identifiants pour tester :")
-        examples = users_df[["name", "password"]].rename(columns={"name": "Utilisateur", "password": "Mot de passe"})
-        st.dataframe(examples, use_container_width=True)
+        with sidebar:
+            st.markdown("Voici quelques exemples d'identifiants pour tester :")
+            examples = users_df[["name", "password"]].rename(columns={"name": "Utilisateur", "password": "Mot de passe"})
+            st.dataframe(examples, use_container_width=True)
 
 def authenticate(username, password, users_df):
     user_row = users_df[users_df["name"] == username]
@@ -63,11 +64,14 @@ def main():
     if "current_page" not in st.session_state:
         st.session_state.current_page = "🖤 Home 🖤"
 
+    if st.session_state['name'] == None:
+        tips_connexion()
+    
     if not st.session_state.authenticated:
     st.title("Connexion")
     username = st.text_input("Nom d'utilisateur")
     password = st.text_input("Mot de passe", type="password")
-    tips_connexion(users_df)
+   
     if st.button("Se connecter"):
         valid, user_data = authenticate(username, password, users_df)
         if valid:
