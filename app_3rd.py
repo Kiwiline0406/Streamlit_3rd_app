@@ -11,10 +11,9 @@ def load_users():
 
 def tips_connexion(users_df):
     if st.checkbox("💡 Besoin d'un indice de connexion ?"):
-        with sidebar:
-            st.markdown("Voici quelques exemples d'identifiants pour tester :")
-            examples = users_df[["name", "password"]].rename(columns={"name": "Utilisateur", "password": "Mot de passe"})
-            st.dataframe(examples, use_container_width=True)
+        st.markdown("Voici quelques exemples d'identifiants pour tester :")
+        examples = users_df[["name", "password"]].rename(columns={"name": "Utilisateur", "password": "Mot de passe"})
+        st.dataframe(examples, use_container_width=True)
 
 def authenticate(username, password, users_df):
     user_row = users_df[users_df["name"] == username]
@@ -38,7 +37,6 @@ def load_and_correct_image(path):
             elif orientation_value == 8:
                 img = img.rotate(90, expand=True)
     except (AttributeError, KeyError, IndexError):
-        # Pas de métadonnées EXIF
         pass
     return img
 
@@ -64,26 +62,23 @@ def main():
     if "current_page" not in st.session_state:
         st.session_state.current_page = "🖤 Home 🖤"
 
-    if st.session_state['name'] == None:
-        tips_connexion()
-    
     if not st.session_state.authenticated:
         st.title("Connexion")
         username = st.text_input("Nom d'utilisateur")
         password = st.text_input("Mot de passe", type="password")
-   
-    if st.button("Se connecter"):
-        valid, user_data = authenticate(username, password, users_df)
-        if valid:
-            st.session_state.authenticated = True
-            st.session_state.username = user_data["name"]
-            st.rerun()
-        else:
-            st.error("Nom d'utilisateur ou mot de passe incorrect.")
-    
-    
+
+        if st.button("Se connecter"):
+            valid, user_data = authenticate(username, password, users_df)
+            if valid:
+                st.session_state.authenticated = True
+                st.session_state.username = user_data["name"]
+                st.rerun()
+            else:
+                st.error("Nom d'utilisateur ou mot de passe incorrect.")
+
+        tips_connexion(users_df)  # 💡 Ajouté au bon endroit
+
     else:
-        # SIDEBAR
         st.sidebar.markdown(f"👋 Bienvenue **{st.session_state.username}**")
         menu_items = ["🖤 Home 🖤"] + cats
 
@@ -99,7 +94,6 @@ def main():
             st.session_state.username = ""
             st.rerun()
 
-        # CONTENU PRINCIPAL
         st.title(st.session_state.current_page)
         if st.session_state.current_page == "🖤 Home 🖤":
             st.markdown("Bienvenue dans l'album photo des chats 🐾 !\n\nClique sur un nom à gauche pour voir les photos.")
