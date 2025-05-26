@@ -9,6 +9,12 @@ cats = ["Kiwi", "Lenka", "Keiko", "Flokie", "Loken"]
 def load_users():
     return pd.read_csv("users.csv")
 
+def tips_connexion(users_df):
+    if st.checkbox("💡 Besoin d'un indice de connexion ?"):
+        st.markdown("Voici quelques exemples d'identifiants pour tester :")
+        examples = users_df[["name", "password"]].rename(columns={"name": "Utilisateur", "password": "Mot de passe"})
+        st.dataframe(examples, use_container_width=True)
+
 def authenticate(username, password, users_df):
     user_row = users_df[users_df["name"] == username]
     if not user_row.empty and user_row.iloc[0]["password"] == password:
@@ -58,17 +64,20 @@ def main():
         st.session_state.current_page = "🖤 Home 🖤"
 
     if not st.session_state.authenticated:
-        st.title("Connexion")
-        username = st.text_input("Nom d'utilisateur")
-        password = st.text_input("Mot de passe", type="password")
-        if st.button("Se connecter"):
-            valid, user_data = authenticate(username, password, users_df)
-            if valid:
-                st.session_state.authenticated = True
-                st.session_state.username = user_data["name"]
-                st.rerun()
-            else:
-                st.error("Nom d'utilisateur ou mot de passe incorrect.")
+    st.title("Connexion")
+    username = st.text_input("Nom d'utilisateur")
+    password = st.text_input("Mot de passe", type="password")
+    if st.button("Se connecter"):
+        valid, user_data = authenticate(username, password, users_df)
+        if valid:
+            st.session_state.authenticated = True
+            st.session_state.username = user_data["name"]
+            st.rerun()
+        else:
+            st.error("Nom d'utilisateur ou mot de passe incorrect.")
+    
+    # 🔽 Ajout ici :
+    tips_connexion(users_df)
     else:
         # SIDEBAR
         st.sidebar.markdown(f"👋 Bienvenue **{st.session_state.username}**")
