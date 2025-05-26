@@ -26,3 +26,5 @@ wendy,furball,wendy@catworld.net,0,False,user
 xavier,tigré123,xavier@xmail.com,0,False,user
 yasmine,croquette,yasmine@chatmail.fr,0,False,user
 zach,minetpass,zach@zoo.fr,0,False,admin
+root,rootMDP,root@gmail.com,0,False,admin
+utilisateur,utilisateurMDP,utilisateur@gmail.com,0,False,user
