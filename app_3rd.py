@@ -2,73 +2,78 @@ import pandas as pd
 import streamlit as st
 # Importation du module
 from streamlit_option_menu import option_menu
-from streamlit_authenticator import Authenticate
 
+import os
+from PIL import Image
 
-# Définition du Menu en sidebar
-with st.sidebar:
-    selection = option_menu(menu_title=None, options = [":pink_heart: Home :pink_heart:", 
-                                                        "Catounets :camera:"])
+# Liste des noms des chats
+cats = ["Kiwi", "Lenka", "Keiko", "Flokie", "Loken"]
 
+# Chargement des utilisateurs
+@st.cache_data
+def load_users():
+    return pd.read_csv("users.csv")
 
-# On indique au programme quoi faire en fonction du choix
-if selection == ":pink_heart: Home :pink_heart:":
-    st.write("Welcome at Home !")
+# Authentification
+def authenticate(username, password, users_df):
+    user_row = users_df[users_df["name"] == username]
+    if not user_row.empty and user_row.iloc[0]["password"] == password:
+        return True, user_row.iloc[0]
+    return False, None
 
+# Affichage de 3 images d'un chat
+def show_cat_images(cat_name):
+    image_dir = "images"
+    images = [f"{cat_name}{i}.jpg" for i in range(1, 4)]  # ex: Kiwi1.jpg, Kiwi2.jpg, Kiwi3.jpg
+    cols = st.columns(3)
+    for i in range(3):
+        img_path = os.path.join(image_dir, images[i])
+        if os.path.exists(img_path):
+            img = Image.open(img_path)
+            cols[i].image(img, use_column_width=True, caption=images[i])
+        else:
+            cols[i].warning(f"{images[i]} non trouvée")
 
-elif selection == "Catounets :camera:":
-    st.write("Catounets's Pictures :camera:")
-        # Création de 3 colonnes 
-    col1, col2, col3 = st.columns(3)
-        # Contenu de la première colonne : 
-    with col1:
-        st.image("https://www.reddit.com/r/aww/comments/hoa5p2/if_youve_ever_wondered_what_a_mainecoon_kitten/?tl=fr#lightbox")
-        # Contenu de la deuxième colonne :
-    with col2:
-        st.image("https://www.zooplus.fr/magazine/wp-content/uploads/2018/07/maine-coon-2-1024x683.webp")
-    # Contenu de la troisième colonne : 
-    with col3:
-        st.image("https://www.atavik.fr/wp-content/uploads/2022/02/portraits-maine-coon-x5.jpeg")
+# Application principale
+def main():
+    st.set_page_config(page_title="Album Chats", layout="wide")
+    users_df = load_users()
 
-# Nos données utilisateurs doivent respecter ce format
-lesDonneesDesComptes = {
-    'usernames': {
-        'utilisateur': {
-            'name': 'utilisateur',
-            'password': 'utilisateurMDP',
-            'email': 'utilisateur@gmail.com',
-            'failed_login_attemps': 0,  # Sera géré automatiquement
-            'logged_in': False,          # Sera géré automatiquement
-            'role': 'utilisateur'
-        },
-        'root': {
-            'name': 'root',
-            'password': 'rootMDP',
-            'email': 'admin@gmail.com',
-            'failed_login_attemps': 0,  # Sera géré automatiquement
-            'logged_in': False,          # Sera géré automatiquement
-            'role': 'administrateur'
-        }
-    }
-}
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+        st.session_state.username = ""
 
-authenticator = Authenticate(
-    lesDonneesDesComptes,  # Les données des comptes
-    "cookie name",         # Le nom du cookie, un str quelconque
-    "cookie key",          # La clé du cookie, un str quelconque
-    30,                    # Le nombre de jours avant que le cookie expire
-)
+    if not st.session_state.authenticated:
+        st.title("Connexion")
+        username = st.text_input("Nom d'utilisateur")
+        password = st.text_input("Mot de passe", type="password")
+        if st.button("Se connecter"):
+            valid, user_data = authenticate(username, password, users_df)
+            if valid:
+                st.session_state.authenticated = True
+                st.session_state.username = user_data["name"]
+                st.success(f"Bienvenue {st.session_state.username} !")
+                st.experimental_rerun()
+            else:
+                st.error("Nom d'utilisateur ou mot de passe incorrect.")
+    else:
+        st.sidebar.title("Menu")
+        st.sidebar.markdown(f"👤 Bienvenue **{st.session_state.username}**")
 
-def accueil():
-      st.title("Bienvenue sur le contenu réservé aux utilisateurs connectés")
+        pages = ["🖤 Home 🖤"] + cats
+        selected_page = st.sidebar.radio("Navigation", pages)
 
-with st.sidebar:
-    if st.session_state["authentication_status"]:
-    accueil()
-    # Le bouton de déconnexion
-    authenticator.logout("Déconnexion")
+        if st.sidebar.button("Déconnexion"):
+            st.session_state.authenticated = False
+            st.session_state.username = ""
+            st.experimental_rerun()
 
-    elif st.session_state["authentication_status"] is False:
-        st.error("L'username ou le password est/sont incorrect")
-    elif st.session_state["authentication_status"] is None:
-        st.warning('Les champs username et mot de passe doivent être remplie')
+        st.title(selected_page)
+
+        if selected_page == "🖤 Home 🖤":
+            st.markdown("Bienvenue dans l'album photo des chats 🐾 !\nChoisissez un chat dans le menu pour voir ses photos.")
+        else:
+            show_cat_images(selected_page)
+
+if __name__ == "__main__":
+    main()
