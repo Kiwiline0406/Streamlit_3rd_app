@@ -8,7 +8,7 @@ from streamlit_authenticator import Authenticate
 # Définition du Menu en sidebar
 with st.sidebar:
     selection = option_menu(menu_title=None, options = [":pink_heart: Home :pink_heart:", 
-                                                        "Catounets :camera:")
+                                                        "Catounets :camera:"])
 
 
 # On indique au programme quoi faire en fonction du choix
