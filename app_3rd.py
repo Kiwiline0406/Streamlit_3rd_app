@@ -53,7 +53,7 @@ def main():
                 st.session_state.authenticated = True
                 st.session_state.username = user_data["name"]
                 st.success(f"Bienvenue {st.session_state.username} !")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Nom d'utilisateur ou mot de passe incorrect.")
     else:
