@@ -23,7 +23,7 @@ def show_cat_images(cat_name):
         img_path = os.path.join(image_dir, images[i])
         if os.path.exists(img_path):
             img = Image.open(img_path)
-            cols[i].image(img, use_column_width=True, caption=images[i])
+            cols[i].image(img,  use_container_width=True, caption=images[i])
         else:
             cols[i].warning(f"{images[i]} non trouvée")
 
