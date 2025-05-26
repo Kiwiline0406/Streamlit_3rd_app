@@ -6,4 +6,6 @@ This is about to create our third app as a Wild Code School's Challenge with tho
 - the account's datas are provided by a csv file, read with pandas in Streamlit. The file should contains the following columns : name, password, email, failed_login_attemps, logged_in et role.
 - the navbar shoul be placed in th sidebar. It will also include : 'Déconnexion' and a welcome message such as 'Bienvenue Username'.
 
-And then, the app will be deployed on Stremalit.io 
+And then, the app will be deployed on Streamlit.io 
+
+The app is there : https://wcs-third-app.streamlit.app/
