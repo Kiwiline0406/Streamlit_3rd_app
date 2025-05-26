@@ -67,6 +67,7 @@ def main():
     st.title("Connexion")
     username = st.text_input("Nom d'utilisateur")
     password = st.text_input("Mot de passe", type="password")
+    tips_connexion(users_df)
     if st.button("Se connecter"):
         valid, user_data = authenticate(username, password, users_df)
         if valid:
@@ -76,8 +77,7 @@ def main():
         else:
             st.error("Nom d'utilisateur ou mot de passe incorrect.")
     
-    # 🔽 Ajout ici :
-    tips_connexion(users_df)
+    
     else:
         # SIDEBAR
         st.sidebar.markdown(f"👋 Bienvenue **{st.session_state.username}**")
