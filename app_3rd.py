@@ -97,6 +97,10 @@ def main():
         st.title(st.session_state.current_page)
         if st.session_state.current_page == "🖤 Home 🖤":
             st.markdown("Bienvenue dans l'album photo des chats 🐾 !\n\nClique sur un nom à gauche pour voir les photos.")
+            st.image("https://ladiesgamers.com/wp-content/uploads/2024/03/20240316211631_1-1536x960.jpg",
+                    caption="Un moment de détente? Check les jeux Hidden Cats 🎮🐱",
+                    use_container_width=True)
+            
         else:
             show_cat_images(st.session_state.current_page)
 
