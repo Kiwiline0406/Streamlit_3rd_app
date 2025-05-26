@@ -68,9 +68,9 @@ def main():
         tips_connexion()
     
     if not st.session_state.authenticated:
-    st.title("Connexion")
-    username = st.text_input("Nom d'utilisateur")
-    password = st.text_input("Mot de passe", type="password")
+        st.title("Connexion")
+        username = st.text_input("Nom d'utilisateur")
+        password = st.text_input("Mot de passe", type="password")
    
     if st.button("Se connecter"):
         valid, user_data = authenticate(username, password, users_df)
